@@ -1,14 +1,14 @@
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from bot.db import User, Chat
 
 
-async def _group_register_check(event: Message | CallbackQuery, data: Dict[str, Any]):
+async def _group_register_check(event: Message, data: Dict[str, Any]):
     session_maker: sessionmaker = data['session_maker']
     async with session_maker() as session:
         async with session.begin():
@@ -44,9 +44,9 @@ class GroupRegisterCheck(BaseMiddleware):
     async def __call__(
         self,
         handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
-        event: Message | CallbackQuery,
+        event: Message,
         data: Dict[str, Any]
     ) -> Any:
-        if event.chat.type not in ('private', 'channel'):
+        if isinstance(event, Message) and event.chat.type not in ('private', 'channel'):
             await _group_register_check(event, data)
         return await handler(event, data)
