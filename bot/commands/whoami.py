@@ -9,7 +9,6 @@ import config
 
 class WhoCallbackData(CallbackData, prefix='who'):
     user_id: int
-    is_bot_admin: bool = False
 
 
 async def whoami_command(message: types.Message):

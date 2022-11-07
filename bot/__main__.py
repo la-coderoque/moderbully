@@ -8,12 +8,15 @@ import config
 from commands import register_user_commands
 from commands.descriptions import CMD_DESC
 from db import get_async_engine, get_session_maker
+from middlewares import register_middlewares
 
 
 async def main() -> None:
     logging.basicConfig(level=logging.INFO)
     bot = Bot(config.BOT_TOKEN)
     dp = Dispatcher()
+
+    register_middlewares(dp)
 
     commands = [
         BotCommand(command=cmd, description=inline_desc)
