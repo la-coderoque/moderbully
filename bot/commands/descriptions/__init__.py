@@ -1,15 +1,16 @@
 CMD_DESC = (
-    """
-    cmd, inline description, long description
-    """
+    # cmd, inline description, long description
+
     # /-commands (bot info commands)
     # not for use in group chat
-    ('start', "▶ let's have some fun baby ☣",
-     "...an idle brain is the devil's workshop 😈"),
-    ('help', '📑 help and how-to',
-     'you know how to use this command if you are reading this message :)\n\n'
-     'another way to get info about command is inline buttons in this chat (NOT IN GROUP CHAT)'),
-    ('whoami', 'get your telegram account id 👨‍💻', None),
+    ('start', "запустить справку о боте",
+     "...праздный ум — мастерская дьявола 😈"),
+    ('help', 'путеводитель',
+     'если ты читаешь это сообщение — ты умеешь пользоваться командой /help\n\n'
+     'другой способ получить справку о команде — вызвать её саму в ЭТОМ диалоге\n'
+     'команды делятся на несколько типов, для наглядности они отличаются префиксами:\n'
+     '! — модераторские команды ()'),
+    ('whoami', 'получить айди своего тг-аккаунта', None),
     # !-commands (moderator's commands)
     # for use in group chat only
     ('rr', "random read-only",
