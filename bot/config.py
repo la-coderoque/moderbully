@@ -7,7 +7,7 @@ from sqlalchemy.engine import URL
 load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-ADMIN_IDS = json.loads(os.environ['ADMIN_IDS'])
+ADMIN_ID = json.loads(os.environ['ADMIN_ID'])
 
 POSTGRES_URL = URL.create(
     'postgresql+asyncpg',

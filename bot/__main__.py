@@ -1,29 +1,27 @@
 import asyncio
 import logging
 
-from aiogram import Dispatcher, Bot
+from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
 
+import bot
 import config
-from commands import register_user_commands
-from commands.descriptions import CMD_DESC
+from commands.base import register_base_commands
+from commands.moderation import register_moderation_commands
+from commands.descriptions import base_cmds
 from db import get_async_engine, get_session_maker
 from middlewares import register_middlewares
 
 
-async def main() -> None:
+async def main(bot: Bot, dp: Dispatcher) -> None:
     logging.basicConfig(level=logging.INFO)
-    bot = Bot(config.BOT_TOKEN)
-    dp = Dispatcher()
 
+    await bot.set_my_commands(commands=[BotCommand(command=cmd.command,
+                                                   description=cmd.short_desc)
+                                        for cmd in base_cmds])
     register_middlewares(dp)
-
-    commands = [
-        BotCommand(command=cmd, description=inline_desc)
-        for cmd, inline_desc, _ in CMD_DESC
-    ]
-    await bot.set_my_commands(commands=commands)
-    register_user_commands(dp)
+    register_base_commands(dp)
+    register_moderation_commands(dp)
 
     async_engine = get_async_engine(config.POSTGRES_URL)
     session_maker = get_session_maker(async_engine)
@@ -32,6 +30,6 @@ async def main() -> None:
 
 if __name__ == '__main__':
     try:
-        asyncio.run(main())
+        asyncio.run(main(bot.bot, bot.dp))
     except (KeyboardInterrupt, SystemExit):
         print('Bot stopped')
