@@ -35,7 +35,7 @@ async def ban_command(message: Message) -> None:
     duration = await parse_timedelta_from_message(message)
     if not duration:
         return
-    elif duration.min == DEFAULT_TD:
+    elif duration.seconds == DEFAULT_TD * 60:
         await bot.ban_chat_member(
             chat_id=message.chat.id,
             user_id=message.reply_to_message.from_user.id,
@@ -52,6 +52,15 @@ async def ban_command(message: Message) -> None:
                              f'<b>banned</b> for {td_format(duration) or " "}')
 
 
+async def ban_sender_chat_command(message: Message) -> None:
+    if not await moderator_reply_to_condition(message):
+        return
+    await bot.ban_chat_sender_chat(chat_id=message.chat.id,
+                                   sender_chat_id=message.reply_to_message.sender_chat.id)
+    await message.answer(f'Channel {message.reply_to_message.sender_chat.title} '
+                         '<b>banned</b> forever')
+
+
 # unmute|unban
 async def unmute_command(message: Message) -> None:
     if not await moderator_reply_to_condition(message):
@@ -64,3 +73,11 @@ async def unmute_command(message: Message) -> None:
     await apply_restriction(message=message,
                             permissions=ChatPermissions(can_send_messages=True))
     await message.answer(f'User {message.reply_to_message.from_user.first_name} unrestricted')
+
+
+async def unban_sender_chat_command(message: Message) -> None:
+    if not await moderator_reply_to_condition(message):
+        return
+    await bot.unban_chat_sender_chat(chat_id=message.chat.id,
+                                     sender_chat_id=message.reply_to_message.sender_chat.id)
+    await message.answer(f'Channel {message.reply_to_message.sender_chat.title} <b>unbanned</b>')

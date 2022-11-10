@@ -79,9 +79,11 @@ ban_cmd = CmdDesc(
     commands=['b', 'ban'],
     short_desc='бан',
     long_desc=(
-        'Удаляет пользователя из чата, запрещает вступать'
+        'Удаляет пользователя из чата, запрещает вступать в чат\n'
         f'{REPLY_DESC}\n'
-        f'{TD_DESC.format("бессрочно", "b", MODER_PREFIX)}'
+        f'{TD_DESC.format("бессрочно", "b", MODER_PREFIX)}\n'
+        'При применении команды в ответ на сообщение отправленное от имени канала '
+        'бан для канала будет бессрочным'
     ),
     prefix=MODER_PREFIX,
 )
@@ -89,7 +91,7 @@ unmute_cmd = CmdDesc(
     commands=['u', 'unmute', 'unban'],
     short_desc='разбан',
     long_desc=(
-        'Возвращает пользователю возможность находиться в чате и/или отправлять сообщения\n\n'
+        'Разбанивает пользователей и каналы, снимает read-only\n\n'
         f'{REPLY_DESC}'
     ),
     prefix=MODER_PREFIX,
