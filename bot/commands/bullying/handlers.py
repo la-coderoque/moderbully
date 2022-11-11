@@ -66,7 +66,9 @@ async def check_user_state(message: Message, session_maker: sessionmaker) -> Non
             result = await session.execute(select(User).where(User.user_id == user_id))
             user = result.scalars().unique().one_or_none()
             cursed = getattr(user, 'is_cursed')
-    if cursed and randrange(100) <= 10:
+    part = randrange(2, 6)
+    duration = randrange(3, 16) * 60
+    if cursed and randrange(101) <= part:
         await apply_restriction_to_sender(message=message,
                                           permissions=ChatPermissions(can_send_messages=False),
-                                          duration=timedelta(seconds=random_time_in_range(0, 24)))
+                                          duration=timedelta(seconds=duration))
