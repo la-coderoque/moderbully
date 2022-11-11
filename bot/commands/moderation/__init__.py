@@ -5,7 +5,7 @@ from bot.commands.descriptions import (ban_cmd, is_sheriff_cmd, is_not_sheriff_c
                                        nostickers_cmd, novideo_cmd, novoice_cmd, ro_cmd, rr_cmd,
                                        stickerson_cmd, videoon_cmd, voiceon_cmd, unmute_cmd)
 from bot.filters import IsReplyToChannel, IsGroup
-from .handlers import (ban_command, ban_sender_chat_command, check_user_permissions,
+from .handlers import (ban_command, ban_sender_chat_command,
                        check_sticker, check_video, check_voice, is_sheriff_command,
                        is_not_sheriff_command, nostickers_command,
                        novideo_command, novoice_command, read_only_command,
@@ -35,4 +35,3 @@ def register_moderation_commands(router: Router) -> None:
     router.message.register(check_voice, IsGroup(), F.voice)
     router.message.register(check_sticker, IsGroup(), F.sticker)
     router.message.register(check_video, IsGroup(), F.video_note)
-    router.message.register(check_user_permissions, IsGroup())

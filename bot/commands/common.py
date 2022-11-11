@@ -16,6 +16,17 @@ def list_admin_ids(admins: list[ChatMemberAdministrator, ChatMemberOwner]) -> li
     return [admin.user.id for admin in admins if not admin.user.is_bot]
 
 
+async def change_reply_to_user_field(message: Message, attr: str, flag: bool,
+                                     session_maker: sessionmaker) -> None:
+    async with session_maker() as session:
+        async with session.begin():
+            user_id = f'{message.chat.id}_{message.reply_to_message.from_user.id}'
+            result = await session.execute(select(User).where(User.user_id == user_id))
+            user = result.scalars().unique().one_or_none()
+            setattr(user, attr, flag)
+            await session.merge(user)
+
+
 def can_user_restrict_other(user_1: ChatMember, user_2: ChatMember) -> bool:
     """
     can user_1 restrict user_2?
@@ -63,5 +74,22 @@ async def apply_restriction(message: Message, permissions: ChatPermissions,
         await message.answer(
             '<b>Read-only</b> activated for user '
             f'{message.reply_to_message.from_user.first_name}.'
+            f' Duration: {td_format(duration) or " "}',
+        )
+
+
+async def apply_restriction_to_sender(message: Message, permissions: ChatPermissions,
+                                      duration: Optional[timedelta] = None):
+    await bot.restrict_chat_member(
+        chat_id=message.chat.id,
+        user_id=message.from_user.id,
+        permissions=permissions,
+        until_date=duration,
+    )
+
+    if permissions.can_send_messages is not True:
+        await message.answer(
+            '<b>Read-only</b> activated for user '
+            f'{message.from_user.first_name}.'
             f' Duration: {td_format(duration) or " "}',
         )

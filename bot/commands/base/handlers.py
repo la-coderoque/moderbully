@@ -3,10 +3,10 @@ from aiogram.filters import CommandObject
 from aiogram.filters.callback_data import CallbackData
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.commands.descriptions import base_cmds, moderation_cmds
+from bot.commands.descriptions import base_cmds, moderation_cmds, bullying_cmds
 import config
 
-CMDS = base_cmds + moderation_cmds
+CMDS = base_cmds + moderation_cmds + bullying_cmds
 
 
 class WhoCallbackData(CallbackData, prefix='who'):
@@ -51,7 +51,7 @@ async def help_command(message: types.Message, command: CommandObject) -> None:
 
 async def cmd_list_command(message: types.Message) -> None:
     res = ''
-    for cmd in base_cmds + moderation_cmds:
+    for cmd in CMDS:
         res += f'<b>{cmd.prefix}{cmd.command}</b> — {cmd.short_desc}\n'
     return await message.answer(res[:-1:])
 

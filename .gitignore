@@ -134,3 +134,4 @@ dmypy.json
 # dev
 requirements-dev.txt
 setup.cfg
+test.py

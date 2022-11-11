@@ -1,19 +1,15 @@
-from aiogram.types import (ChatPermissions, Message)
 from datetime import timedelta
 
+from aiogram.types import ChatPermissions, Message
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from bot import bot
+from bot.db import User
 from bot.utils.time import (parse_timedelta_from_message, random_time_in_range,
                             td_format, DEFAULT_TD)
-from ..common import apply_restriction, moderator_reply_to_condition, sheriff_reply_to_condition
-from bot.db import User
-
-
-# check permissions
-async def check_user_permissions(message: Message, session_maker: sessionmaker):
-    pass
+from ..common import (apply_restriction, change_reply_to_user_field,
+                      moderator_reply_to_condition, sheriff_reply_to_condition)
 
 
 # read only
@@ -84,7 +80,14 @@ async def unmute_command(message: Message, session_maker: sessionmaker) -> None:
         only_if_banned=True,
     )
     await apply_restriction(message=message,
-                            permissions=ChatPermissions(can_send_messages=True))
+                            permissions=ChatPermissions(can_send_messages=True,
+                                                        can_send_media_messages=True,
+                                                        can_send_other_messages=True,
+                                                        can_send_polls=True,
+                                                        can_add_web_page_previews=True,
+                                                        can_change_info=True,
+                                                        can_invite_users=True,
+                                                        can_pin_messages=True))
     await message.answer(f'User {message.reply_to_message.from_user.first_name} unrestricted')
 
 
@@ -98,17 +101,6 @@ async def unban_sender_chat_command(message: Message, session_maker: sessionmake
 
 
 # media
-async def _change_reply_to_user_field(message: Message, attr: str, flag: bool,
-                                      session_maker: sessionmaker) -> None:
-    async with session_maker() as session:
-        async with session.begin():
-            user_id = f'{message.chat.id}_{message.reply_to_message.from_user.id}'
-            result = await session.execute(select(User).where(User.user_id == user_id))
-            user = result.scalars().unique().one_or_none()
-            setattr(user, attr, flag)
-            await session.merge(user)
-
-
 async def _check_del_media(message: Message, attr: str, session_maker: sessionmaker) -> None:
     async with session_maker() as session:
         async with session.begin():
@@ -134,8 +126,8 @@ async def novoice_command(message: Message, session_maker: sessionmaker) -> None
     if not (await moderator_reply_to_condition(message) or
             await sheriff_reply_to_condition(message, session_maker)):
         return
-    await _change_reply_to_user_field(message, attr='can_send_voice_messages', flag=False,
-                                      session_maker=session_maker)
+    await change_reply_to_user_field(message, attr='can_send_voice_messages', flag=False,
+                                     session_maker=session_maker)
     await _media_restrict_answer(message, 'voice', True)
 
 
@@ -143,8 +135,8 @@ async def voiceon_command(message: Message, session_maker: sessionmaker) -> None
     if not (await moderator_reply_to_condition(message) or
             await sheriff_reply_to_condition(message, session_maker)):
         return
-    await _change_reply_to_user_field(message, attr='can_send_voice_messages',
-                                      flag=True, session_maker=session_maker)
+    await change_reply_to_user_field(message, attr='can_send_voice_messages',
+                                     flag=True, session_maker=session_maker)
     await _media_restrict_answer(message, 'voice', False)
 
 
@@ -157,8 +149,8 @@ async def nostickers_command(message: Message, session_maker: sessionmaker) -> N
     if not (await moderator_reply_to_condition(message) or
             await sheriff_reply_to_condition(message, session_maker)):
         return
-    await _change_reply_to_user_field(message, attr='can_send_stickers', flag=False,
-                                      session_maker=session_maker)
+    await change_reply_to_user_field(message, attr='can_send_stickers', flag=False,
+                                     session_maker=session_maker)
     await _media_restrict_answer(message, 'stickers', True)
 
 
@@ -166,8 +158,8 @@ async def stickerson_command(message: Message, session_maker: sessionmaker) -> N
     if not (await moderator_reply_to_condition(message) or
             await sheriff_reply_to_condition(message, session_maker)):
         return
-    await _change_reply_to_user_field(message, attr='can_send_stickers',
-                                      flag=True, session_maker=session_maker)
+    await change_reply_to_user_field(message, attr='can_send_stickers',
+                                     flag=True, session_maker=session_maker)
     await _media_restrict_answer(message, 'stickers', False)
 
 
@@ -180,8 +172,8 @@ async def novideo_command(message: Message, session_maker: sessionmaker) -> None
     if not (await moderator_reply_to_condition(message) or
             await sheriff_reply_to_condition(message, session_maker)):
         return
-    await _change_reply_to_user_field(message, attr='can_send_video_messages', flag=False,
-                                      session_maker=session_maker)
+    await change_reply_to_user_field(message, attr='can_send_video_messages', flag=False,
+                                     session_maker=session_maker)
     await _media_restrict_answer(message, 'video messages', True)
 
 
@@ -189,8 +181,8 @@ async def videoon_command(message: Message, session_maker: sessionmaker) -> None
     if not (await moderator_reply_to_condition(message) or
             await sheriff_reply_to_condition(message, session_maker)):
         return
-    await _change_reply_to_user_field(message, attr='can_send_video_messages',
-                                      flag=True, session_maker=session_maker)
+    await change_reply_to_user_field(message, attr='can_send_video_messages',
+                                     flag=True, session_maker=session_maker)
     await _media_restrict_answer(message, 'video messages', False)
 
 
@@ -202,15 +194,15 @@ async def check_video(message: Message, session_maker: sessionmaker) -> None:
 async def is_sheriff_command(message: Message, session_maker: sessionmaker) -> None:
     if not await moderator_reply_to_condition(message):
         return
-    await _change_reply_to_user_field(message, attr='is_sheriff',
-                                      flag=True, session_maker=session_maker)
+    await change_reply_to_user_field(message, attr='is_sheriff',
+                                     flag=True, session_maker=session_maker)
     await message.answer(f'User {message.reply_to_message.from_user.first_name} is sheriff now')
 
 
 async def is_not_sheriff_command(message: Message, session_maker: sessionmaker) -> None:
     if not await moderator_reply_to_condition(message):
         return
-    await _change_reply_to_user_field(message, attr='is_sheriff',
-                                      flag=False, session_maker=session_maker)
+    await change_reply_to_user_field(message, attr='is_sheriff',
+                                     flag=False, session_maker=session_maker)
     await message.answer(f'User {message.reply_to_message.from_user.first_name} '
                          'is not sheriff now')
