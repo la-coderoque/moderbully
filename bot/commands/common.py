@@ -41,7 +41,7 @@ async def apply_restriction(message: Message, permissions: ChatPermissions,
         until_date=duration,
     )
 
-    if not permissions.can_send_messages:
+    if permissions.can_send_messages is not True:
         await message.answer(
             '<b>Read-only</b> activated for user '
             f'{message.reply_to_message.from_user.first_name}.'

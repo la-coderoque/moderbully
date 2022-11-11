@@ -1,5 +1,5 @@
 aiofiles==22.1.0
-aiogram==3.0.0b5
+aiogram @ https://github.com/aiogram/aiogram/archive/refs/heads/dev-3.x.zip
 aiohttp==3.8.3
 aiosignal==1.2.0
 alembic==1.8.1

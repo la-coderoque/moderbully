@@ -55,7 +55,7 @@ base_cmds: list[CmdDesc] = [start_cmd, help_cmd, cmd_list_cmd, whoami_cmd]
 
 # moderation commands
 ro_cmd = CmdDesc(
-    commands=['ro', 'readonly', 'mute', 'shutup', 'fuckoff', 'помолчи'],
+    commands=['ro', 'readonly', 'mute'],
     short_desc='временный read-only',
     long_desc=(
         'Отключает участнику возможность отправлять сообщения в чат, '
@@ -96,4 +96,60 @@ unmute_cmd = CmdDesc(
     ),
     prefix=MODER_PREFIX,
 )
-moderation_cmds: list[CmdDesc] = [ro_cmd, rr_cmd, ban_cmd, unmute_cmd]
+novoice_cmd = CmdDesc(
+    commands=['novoice', 'shutup'],
+    short_desc='отключает пользователю войсы',
+    long_desc=(
+        'Отключает участнику возможность отправлять голосовые сообщения в чат\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=MODER_PREFIX,
+)
+nostickers_cmd = CmdDesc(
+    commands=['nostickers', 'stickersoff'],
+    short_desc='отключает пользователю стикеры и гифки',
+    long_desc=(
+        'Отключает участнику возможность отправлять стикеры и гифки в чат\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=MODER_PREFIX,
+)
+novideo_cmd = CmdDesc(
+    commands=['novideo', 'неткружкам'],
+    short_desc='отключает пользователю видеосообщения',
+    long_desc=(
+        'Отключает участнику возможность отправлять видеосообщения в чат\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=MODER_PREFIX,
+)
+voiceon_cmd = CmdDesc(
+    commands=['voiceon'],
+    short_desc='включает пользователю войсы',
+    long_desc=(
+        'Включает участнику возможность отправлять голосовые сообщения в чат\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=MODER_PREFIX,
+)
+stickerson_cmd = CmdDesc(
+    commands=['stickerson'],
+    short_desc='включает пользователю стикеры и гифки',
+    long_desc=(
+        'Включает участнику возможность отправлять стикеры и гифки в чат\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=MODER_PREFIX,
+)
+videoon_cmd = CmdDesc(
+    commands=['videoon'],
+    short_desc='включает пользователю видеосообщения',
+    long_desc=(
+        'Включает участнику возможность отправлять видеосообщения в чат\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=MODER_PREFIX,
+)
+moderation_cmds: list[CmdDesc] = [ro_cmd, rr_cmd, ban_cmd, unmute_cmd,
+                                  novoice_cmd, nostickers_cmd, novideo_cmd,
+                                  voiceon_cmd, stickerson_cmd, videoon_cmd]

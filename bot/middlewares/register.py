@@ -2,42 +2,29 @@ from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
 from aiogram.types import Message
-from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
-from bot.db import User, Chat
+from bot import db
+from bot.db import Chat, User
 
 
 async def _group_register_check(event: Message, data: Dict[str, Any]):
     session_maker: sessionmaker = data['session_maker']
-    async with session_maker() as session:
-        async with session.begin():
-            result = await session.execute(
-                select(Chat).where(Chat.chat_id == event.chat.id)
-            )
-            chat = result.one_or_none()
-            if chat is not None:
-                pass
-            else:
-                chat = Chat(
-                    chat_id=event.chat.id,
-                    chatname=event.chat.username,
-                )
-                await session.merge(chat)
-
-            result = await session.execute(
-                select(User).where(User.user_id == f'{event.chat.id}_{event.from_user.id}')
-            )
-            user = result.one_or_none()
-
-            if user is not None:
-                pass
-            else:
-                user = User(
-                    user_id=f'{event.chat.id}_{event.from_user.id}',
-                    username=event.from_user.username,
-                )
-                await session.merge(user)
+    chat = await db.get_chat(chat_id=event.chat.id,
+                             session_maker=session_maker)
+    user = await db.get_user(user_id=f'{event.chat.id}_{event.from_user.id}',
+                             session_maker=session_maker)
+    if not chat:
+        await db.merge(Chat(chat_id=event.chat.id,
+                            chatname=event.chat.username),
+                       session_maker=session_maker)
+    if not user:
+        await db.merge(User(user_id=f'{event.chat.id}_{event.from_user.id}',
+                            username=event.from_user.username,
+                            can_send_voice_messages=True,
+                            can_send_video_messages=True,
+                            can_send_stickers=True),
+                       session_maker=session_maker)
 
 
 class GroupRegisterCheck(BaseMiddleware):
