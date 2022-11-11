@@ -19,6 +19,7 @@ class User(BaseModel):
     is_sheriff = Column(Boolean, unique=False, nullable=False)
 
     is_cursed = Column(Boolean, unique=False, nullable=False)
+    is_despicable = Column(Boolean, unique=False, nullable=False)
 
     reg_date = Column(DATE, default=datetime.date.today())
     upd_date = Column(DATE, onupdate=datetime.date.today())

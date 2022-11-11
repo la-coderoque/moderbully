@@ -1,8 +1,8 @@
-"""LAPTOP-K6FG2J8Q
+"""initial
 
-Revision ID: caf95aadfc57
+Revision ID: 5e71a6dd6ffb
 Revises:
-Create Date: 2022-11-11 11:32:48.324930
+Create Date: 2022-11-11 12:16:27.682748
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'caf95aadfc57'
+revision = '5e71a6dd6ffb'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,6 +36,7 @@ def upgrade() -> None:
         sa.Column('can_send_stickers', sa.Boolean(), nullable=False),
         sa.Column('is_sheriff', sa.Boolean(), nullable=False),
         sa.Column('is_cursed', sa.Boolean(), nullable=False),
+        sa.Column('is_despicable', sa.Boolean(), nullable=False),
         sa.Column('reg_date', sa.DATE(), nullable=True),
         sa.Column('upd_date', sa.DATE(), nullable=True),
         sa.PrimaryKeyConstraint('user_id'),

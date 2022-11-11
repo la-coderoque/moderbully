@@ -22,7 +22,8 @@ async def _group_register_check(event: Message, data: Dict[str, Any]):
                    'can_send_video_messages': True,
                    'can_send_stickers': True,
                    'is_sheriff': False,
-                   'is_cursed': False}
+                   'is_cursed': False,
+                   'is_despicable': False}
     user = await db.get_user(user_id=f'{event.chat.id}_{event.from_user.id}',
                              session_maker=session_maker)
     if not user:

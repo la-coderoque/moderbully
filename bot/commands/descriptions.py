@@ -97,7 +97,7 @@ unmute_cmd = CmdDesc(
     prefix=MODER_PREFIX,
 )
 novoice_cmd = CmdDesc(
-    commands=['novoice', 'shutup'],
+    commands=['novoice'],
     short_desc='отключает пользователю войсы',
     long_desc=(
         'Отключает участнику возможность отправлять голосовые сообщения в чат\n\n'
@@ -176,8 +176,8 @@ cursed_cmd = CmdDesc(
     commands=['cursed', 'проклятый'],
     short_desc='проклинает пользователя',
     long_desc=(
-        'Проклятый при отправки каждого сообщения рискует получить <b>rr</b> \n\n'
-        'с вероятностью 10%'
+        f'Проклятый при отправке каждого сообщения рискует получить <b>{rr_cmd.command}</b> '
+        'с вероятностью 10%\n\n'
         f'{REPLY_DESC}'
     ),
     prefix=BULLY_PREFIX,
@@ -188,4 +188,32 @@ uncursed_cmd = CmdDesc(
     long_desc=None,
     prefix=BULLY_PREFIX,
 )
-bullying_cmds: list[CmdDesc] = [cursed_cmd, uncursed_cmd]
+despicable_cmd = CmdDesc(
+    commands=['despicable', 'презренный'],
+    short_desc='проклинает пользователя',
+    long_desc=(
+        f'В проклятого каждый может кинуть <b>{BULLY_PREFIX}shutup</b> '
+        '(ro сработает на 10 минут)\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=BULLY_PREFIX,
+)
+undespicable_cmd = CmdDesc(
+    commands=['undespicable', 'непрезренный'],
+    short_desc='снимает проклятие',
+    long_desc=None,
+    prefix=BULLY_PREFIX,
+)
+shutup_cmd = CmdDesc(
+    commands=['shutup'],
+    short_desc='read-only 10 минут для проклятого пользователя',
+    long_desc=(
+        f'Команда сработает на пользователя к которому применили <b>{BULLY_PREFIX}'
+        f'{despicable_cmd.command}\n</b>'
+        'Команда сработает от любого участника чата\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=BULLY_PREFIX,
+)
+bullying_cmds: list[CmdDesc] = [cursed_cmd, uncursed_cmd, despicable_cmd,
+                                undespicable_cmd, shutup_cmd]
