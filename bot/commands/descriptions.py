@@ -150,6 +150,23 @@ videoon_cmd = CmdDesc(
     ),
     prefix=MODER_PREFIX,
 )
+is_sheriff_cmd = CmdDesc(
+    commands=['is_sheriff', 'issheriff'],
+    short_desc='назначает пользователя шерифом',
+    long_desc=(
+        'Включает участнику возможность использовать модератерские команды, '
+        'кроме создания новых шерифов\n\n'
+        f'{REPLY_DESC}'
+    ),
+    prefix=MODER_PREFIX,
+)
+is_not_sheriff_cmd = CmdDesc(
+    commands=['is_not_sheriff', 'isnotsheriff'],
+    short_desc='снимает пользователя с должности шерифа',
+    long_desc=None,
+    prefix=MODER_PREFIX,
+)
 moderation_cmds: list[CmdDesc] = [ro_cmd, rr_cmd, ban_cmd, unmute_cmd,
                                   novoice_cmd, nostickers_cmd, novideo_cmd,
-                                  voiceon_cmd, stickerson_cmd, videoon_cmd]
+                                  voiceon_cmd, stickerson_cmd, videoon_cmd,
+                                  is_sheriff_cmd, is_not_sheriff_cmd]

@@ -3,8 +3,11 @@ from typing import Optional
 from aiogram.types import (ChatMember, ChatMemberAdministrator,
                            ChatMemberOwner, ChatPermissions, Message)
 from datetime import timedelta
+from sqlalchemy import select
+from sqlalchemy.orm import sessionmaker
 
 from bot import bot
+from bot.db import User
 from bot.utils.time import td_format
 
 
@@ -30,6 +33,21 @@ async def moderator_reply_to_condition(message: Message) -> bool:
     ) if message.reply_to_message else None
     if reply_to_user and can_user_restrict_other(sender, reply_to_user):
         return True
+
+
+async def sheriff_reply_to_condition(message: Message, session_maker: sessionmaker) -> bool:
+    is_sheriff = False
+    async with session_maker() as session:
+        async with session.begin():
+            user_id = f'{message.chat.id}_{message.from_user.id}'
+            result = await session.execute(select(User).where(User.user_id == user_id))
+            user = result.scalars().unique().one_or_none()
+            is_sheriff = user.is_sheriff
+    reply_to_user: ChatMember = await bot.get_chat_member(
+        chat_id=message.chat.id,
+        user_id=message.reply_to_message.from_user.id,
+    ) if message.reply_to_message else None
+    return (is_sheriff and reply_to_user.status not in ('creator', 'administrator'))
 
 
 async def apply_restriction(message: Message, permissions: ChatPermissions,

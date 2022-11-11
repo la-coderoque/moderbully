@@ -12,9 +12,11 @@ class User(BaseModel):
     user_id = Column(String, unique=True, nullable=False, primary_key=True)  # 'chatid_userid'
     username = Column(VARCHAR(32), unique=False, nullable=True)
 
-    can_send_voice_messages = Column(Boolean, unique=False)
-    can_send_video_messages = Column(Boolean, unique=False)
-    can_send_stickers = Column(Boolean, unique=False)
+    can_send_voice_messages = Column(Boolean, unique=False, nullable=False)
+    can_send_video_messages = Column(Boolean, unique=False, nullable=False)
+    can_send_stickers = Column(Boolean, unique=False, nullable=False)
+
+    is_sheriff = Column(Boolean, unique=False, nullable=False)
 
     reg_date = Column(DATE, default=datetime.date.today())
     upd_date = Column(DATE, onupdate=datetime.date.today())
