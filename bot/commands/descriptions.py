@@ -2,8 +2,7 @@ from bot.utils.time import DEFAULT_TD
 from collections import namedtuple
 
 BASE_PREFIX = '/'
-MODER_PREFIX = '!'
-BULLY_PREFIX = '$'
+MODER_PREFIX = '!$£'
 
 REPLY_DESC = 'Срабатывает при ответе командой на сообщение пользователя в групповом чате'
 TD_DESC = (
@@ -40,17 +39,7 @@ help_cmd = CmdDesc(
     prefix=BASE_PREFIX,
 )
 whoami_cmd = CmdDesc(['whoami'], 'получить айди своего тг-аккаунта', None, BASE_PREFIX)
-cmd_list_cmd = CmdDesc(
-    commands=['cmd_list'],
-    short_desc='список команд',
-    long_desc=(
-        'команды делятся на несколько типов, для наглядности они отличаются префиксами:\n'
-        f'<b>{BASE_PREFIX}</b> — справочные команды 📖\n'
-        f'<b>{MODER_PREFIX}</b> — модераторские команды 🗝️\n'
-        f'<b>{BULLY_PREFIX}</b> — буллинг команды\n'
-    ),
-    prefix=BASE_PREFIX,
-)
+cmd_list_cmd = CmdDesc(['cmd_list'], 'список команд', None, BASE_PREFIX)
 base_cmds: list[CmdDesc] = [start_cmd, help_cmd, cmd_list_cmd, whoami_cmd]
 
 # moderation commands
@@ -61,7 +50,7 @@ ro_cmd = CmdDesc(
         'Отключает участнику возможность отправлять сообщения в чат, '
         'возможность читать остаётся\n\n'
         f'{REPLY_DESC}\n'
-        f'{TD_DESC.format(f"{DEFAULT_TD} минут", "ro", MODER_PREFIX)}'
+        f'{TD_DESC.format(f"{DEFAULT_TD} минут", "ro", MODER_PREFIX[0])}'
     ),
     prefix=MODER_PREFIX,
 )
@@ -81,7 +70,7 @@ ban_cmd = CmdDesc(
     long_desc=(
         'Удаляет пользователя из чата, запрещает вступать в чат\n'
         f'{REPLY_DESC}\n'
-        f'{TD_DESC.format("бессрочно", "b", MODER_PREFIX)}\n'
+        f'{TD_DESC.format("бессрочно", "b", MODER_PREFIX[0])}\n'
         'При применении команды в ответ на сообщение отправленное от имени канала '
         'бан для канала будет бессрочным'
     ),
@@ -97,58 +86,58 @@ unmute_cmd = CmdDesc(
     prefix=MODER_PREFIX,
 )
 novoice_cmd = CmdDesc(
-    commands=['novoice'],
+    commands=['voice'],
     short_desc='отключает пользователю войсы',
     long_desc=(
         'Отключает участнику возможность отправлять голосовые сообщения в чат\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=MODER_PREFIX,
+    prefix='-',
 )
 nostickers_cmd = CmdDesc(
-    commands=['nostickers', 'stickersoff'],
-    short_desc='отключает пользователю стикеры и гифки',
+    commands=['stickers'],
+    short_desc='отключает пользователю стикеры',
     long_desc=(
-        'Отключает участнику возможность отправлять стикеры и гифки в чат\n\n'
+        'Отключает участнику возможность отправлять стикеры в чат\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=MODER_PREFIX,
+    prefix='-',
 )
 novideo_cmd = CmdDesc(
-    commands=['novideo', 'неткружкам'],
+    commands=['video'],
     short_desc='отключает пользователю видеосообщения',
     long_desc=(
         'Отключает участнику возможность отправлять видеосообщения в чат\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=MODER_PREFIX,
+    prefix='-',
 )
 voiceon_cmd = CmdDesc(
-    commands=['voiceon'],
+    commands=['voice'],
     short_desc='включает пользователю войсы',
     long_desc=(
         'Включает участнику возможность отправлять голосовые сообщения в чат\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=MODER_PREFIX,
+    prefix='+',
 )
 stickerson_cmd = CmdDesc(
-    commands=['stickerson'],
+    commands=['stickers'],
     short_desc='включает пользователю стикеры и гифки',
     long_desc=(
         'Включает участнику возможность отправлять стикеры и гифки в чат\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=MODER_PREFIX,
+    prefix='+',
 )
 videoon_cmd = CmdDesc(
-    commands=['videoon'],
+    commands=['video'],
     short_desc='включает пользователю видеосообщения',
     long_desc=(
         'Включает участнику возможность отправлять видеосообщения в чат\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=MODER_PREFIX,
+    prefix='+',
 )
 is_sheriff_cmd = CmdDesc(
     commands=['is_sheriff', 'issheriff'],
@@ -173,47 +162,47 @@ moderation_cmds: list[CmdDesc] = [ro_cmd, rr_cmd, ban_cmd, unmute_cmd,
 
 # bullying commands
 cursed_cmd = CmdDesc(
-    commands=['cursed', 'проклятый'],
-    short_desc='проклинает пользователя',
+    commands=['curse'],
+    short_desc='проклинает пользователя рандомным read-only',
     long_desc=(
         f'Проклятый при отправке каждого сообщения рискует получить <b>{rr_cmd.command}</b> '
-        'с вероятностью 10%\n\n'
+        'с вероятностью 2-5% на 1-15 минут\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=BULLY_PREFIX,
+    prefix=MODER_PREFIX,
 )
 uncursed_cmd = CmdDesc(
-    commands=['uncursed', 'непроклятый'],
-    short_desc='снимает проклятие',
+    commands=['uncurse'],
+    short_desc=f'снимает проклятие <b>{MODER_PREFIX[0]}curse</b>',
     long_desc=None,
-    prefix=BULLY_PREFIX,
+    prefix=MODER_PREFIX,
 )
 despicable_cmd = CmdDesc(
     commands=['despicable', 'презренный'],
-    short_desc='проклинает пользователя',
+    short_desc=f'проклинает восприимчивостью к команде <b>{MODER_PREFIX[0]}shutup</b>',
     long_desc=(
-        f'В проклятого каждый может кинуть <b>{BULLY_PREFIX}shutup</b> '
+        f'В проклятого каждый может кинуть <b>{MODER_PREFIX[0]}shutup</b> '
         '(ro сработает на 10 минут)\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=BULLY_PREFIX,
+    prefix=MODER_PREFIX,
 )
 undespicable_cmd = CmdDesc(
-    commands=['undespicable', 'непрезренный'],
-    short_desc='снимает проклятие',
+    commands=['undespicable', 'непрезренный', 'despicable'],
+    short_desc=f'снимает проклятие <b>{MODER_PREFIX[0]}despicable</b>',
     long_desc=None,
-    prefix=BULLY_PREFIX,
+    prefix=MODER_PREFIX,
 )
 shutup_cmd = CmdDesc(
-    commands=['shutup'],
-    short_desc='read-only 10 минут для проклятого пользователя',
+    commands=['shutup', 'завали', 'заткнись'],
+    short_desc=f'read-only 10 мин для проклятого <b>{MODER_PREFIX[0]}despicable</b> пользователя',
     long_desc=(
-        f'Команда сработает на пользователя к которому применили <b>{BULLY_PREFIX}'
+        f'Команда сработает на том, к которому применили <b>{MODER_PREFIX[0]}'
         f'{despicable_cmd.command}\n</b>'
         'Команда сработает от любого участника чата\n\n'
         f'{REPLY_DESC}'
     ),
-    prefix=BULLY_PREFIX,
+    prefix=MODER_PREFIX,
 )
 bullying_cmds: list[CmdDesc] = [cursed_cmd, uncursed_cmd, despicable_cmd,
                                 undespicable_cmd, shutup_cmd]

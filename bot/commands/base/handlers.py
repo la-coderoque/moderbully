@@ -28,10 +28,10 @@ async def help_command(message: types.Message, command: CommandObject) -> None:
     if arg := command.args:
         for cmd in CMDS:
             if cmd.command == arg:
-                res = f'<b>{cmd.prefix}{cmd.command} — {cmd.short_desc}</b>'
+                res = f'<b>{cmd.prefix[0]}{cmd.command} — {cmd.short_desc}</b>'
                 aliases = ''
                 for alias in cmd.aliases:
-                    aliases += f'<b>{cmd.prefix}{alias}</b>\n'
+                    aliases += f'<b>{cmd.prefix[0]}{alias}</b>\n'
                 if cmd.long_desc:
                     res += f'\n\n{cmd.long_desc}'
                 if aliases:
@@ -52,7 +52,7 @@ async def help_command(message: types.Message, command: CommandObject) -> None:
 async def cmd_list_command(message: types.Message) -> None:
     res = ''
     for cmd in CMDS:
-        res += f'<b>{cmd.prefix}{cmd.command}</b> — {cmd.short_desc}\n'
+        res += f'<b>{cmd.prefix[0]}{cmd.command}</b> — {cmd.short_desc}\n'
     return await message.answer(res[:-1:])
 
 
