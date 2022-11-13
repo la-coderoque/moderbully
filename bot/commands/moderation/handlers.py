@@ -51,7 +51,7 @@ async def random_read_only_command(message: Message, command: CommandObject,
         max_spin_cnt = 1000
         min_spin_cnt = 1
         if cnt > max_spin_cnt:
-            await message.answer(f'Максимально количество бросков — {max_spin_cnt}')
+            await message.answer(f'Максимальное количество бросков — {max_spin_cnt}')
             return
         elif cnt < min_spin_cnt:
             await message.answer(f'Минимальное количество бросков — {min_spin_cnt}')
