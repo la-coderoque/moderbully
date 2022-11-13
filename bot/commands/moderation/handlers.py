@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from aiogram.filters import CommandObject
 from aiogram.types import ChatPermissions, Message
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
@@ -12,8 +13,13 @@ from ..common import (apply_restriction, change_reply_to_user_field,
                       moderator_reply_to_condition, sheriff_reply_to_condition)
 
 
+class RouletteParamsParseError(Exception):
+    pass
+
+
 # read only
-async def read_only_command(message: Message, session_maker: sessionmaker) -> None:
+async def read_only_command(message: Message, command: CommandObject,
+                            session_maker: sessionmaker) -> None:
     if not (await moderator_reply_to_condition(message) or
             await sheriff_reply_to_condition(message, session_maker)):
         return
@@ -25,13 +31,36 @@ async def read_only_command(message: Message, session_maker: sessionmaker) -> No
                             duration=duration)
 
 
-async def random_read_only_command(message: Message, session_maker: sessionmaker) -> None:
+async def random_read_only_command(message: Message, command: CommandObject,
+                                   session_maker: sessionmaker) -> None:
     if not (await moderator_reply_to_condition(message) or
             await sheriff_reply_to_condition(message, session_maker)):
         return
+    duration = random_time_in_range(0, 24)
+    if args := command.args:
+        try:
+            cnt, *flg = args.split()
+            cnt = int(cnt)
+        except (AttributeError, ValueError):
+            raise RouletteParamsParseError('Failed to parse cnt from rr params')
+        flg += ['max']
+        flg = flg[0]
+        if flg not in ('min', 'max'):
+            raise RouletteParamsParseError('Failed to parse flg from rr params')
+        max_spin_cnt = 1000
+        if cnt > max_spin_cnt:
+            await message.answer(f'Максимально количество бросков — {max_spin_cnt}')
+            return
+        durations = sorted([random_time_in_range(0, 24) for _ in range(cnt)])
+        min_ = durations[0]
+        max_ = durations[-1]
+        duration = min_ if flg == 'min' else max_
+        await message.answer(f'Кости судьбы были брошены {cnt} раз\n'
+                             f'Минимальное значение: {td_format(timedelta(seconds=min_))}\n'
+                             f'Максимальное значение: {td_format(timedelta(seconds=max_))}')
     await apply_restriction(message=message,
                             permissions=ChatPermissions(can_send_messages=False),
-                            duration=timedelta(seconds=random_time_in_range(0, 24)))
+                            duration=timedelta(seconds=duration))
 
 
 # ban
