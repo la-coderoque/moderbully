@@ -47,15 +47,22 @@ async def random_read_only_command(message: Message, command: CommandObject,
         flg = flg[0]
         if flg not in ('min', 'max'):
             raise RouletteParamsParseError('Failed to parse flg from rr params')
+
         max_spin_cnt = 1000
+        min_spin_cnt = 1
         if cnt > max_spin_cnt:
             await message.answer(f'Максимально количество бросков — {max_spin_cnt}')
             return
+        elif cnt < min_spin_cnt:
+            await message.answer(f'Минимальное количество бросков — {min_spin_cnt}')
+            return
+
         durations = sorted([random_time_in_range(0, 24) for _ in range(cnt)])
         min_ = durations[0]
         max_ = durations[-1]
         duration = min_ if flg == 'min' else max_
-        await message.answer(f'Кости судьбы были брошены {cnt} раз\n'
+        await message.answer(f'Кости судьбы были брошены {cnt} '
+                             f'раз{"a" if cnt%10>=2 and cnt%10<=4 else ""}\n'
                              f'Минимальное значение: {td_format(timedelta(seconds=min_))}\n'
                              f'Максимальное значение: {td_format(timedelta(seconds=max_))}')
     await apply_restriction(message=message,
