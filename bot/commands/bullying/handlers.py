@@ -1,12 +1,12 @@
 from random import randrange
 from datetime import timedelta
 
-from aiogram.types import ChatPermissions, Message
+from aiogram.types import ChatMember, ChatPermissions, Message
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
+from bot import bot
 from bot.db import User
-from bot.utils.time import random_time_in_range
 from ..common import (apply_restriction, apply_restriction_to_sender,
                       change_reply_to_user_field, moderator_reply_to_condition)
 
@@ -45,7 +45,11 @@ async def undespicable_command(message: Message, session_maker: sessionmaker) ->
 
 
 async def shutup_command(message: Message, session_maker: sessionmaker) -> None:
-    if not message.reply_to_message:
+    reply_to_user: ChatMember = await bot.get_chat_member(
+        chat_id=message.chat.id,
+        user_id=message.reply_to_message.from_user.id,
+    ) if message.reply_to_message else None
+    if not reply_to_user or reply_to_user.can_send_messages is False:
         return
     async with session_maker() as session:
         async with session.begin():
