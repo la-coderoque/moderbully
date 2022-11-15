@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from aiogram.types import (ChatMember, ChatMemberAdministrator,
                            ChatMemberOwner, ChatPermissions, Message)
@@ -24,6 +24,17 @@ async def change_reply_to_user_field(message: Message, attr: str, flag: bool,
             result = await session.execute(select(User).where(User.user_id == user_id))
             user = result.scalars().unique().one_or_none()
             setattr(user, attr, flag)
+            await session.merge(user)
+
+
+async def change_sender_field(message: Message, attr: str, value: Any,
+                              session_maker: sessionmaker) -> None:
+    async with session_maker() as session:
+        async with session.begin():
+            user_id = f'{message.chat.id}_{message.from_user.id}'
+            result = await session.execute(select(User).where(User.user_id == user_id))
+            user = result.scalars().unique().one_or_none()
+            setattr(user, attr, value)
             await session.merge(user)
 
 

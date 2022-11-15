@@ -63,7 +63,7 @@ async def shutup_command(message: Message, session_maker: sessionmaker) -> None:
                                 duration=timedelta(seconds=600))
 
 
-async def check_user_state(message: Message, session_maker: sessionmaker) -> None:
+async def check_cursed(message: Message, session_maker: sessionmaker) -> None:
     async with session_maker() as session:
         async with session.begin():
             user_id = f'{message.chat.id}_{message.from_user.id}'

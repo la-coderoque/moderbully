@@ -4,7 +4,7 @@ from aiogram.filters import Command
 from bot.commands.descriptions import (shutup_cmd, cursed_cmd, despicable_cmd,
                                        uncursed_cmd, undespicable_cmd)
 from bot.filters import IsGroup
-from .handlers import (check_user_state, cursed_command, despicable_command, shutup_command,
+from .handlers import (cursed_command, despicable_command, shutup_command,
                        uncursed_command, undespicable_command)
 
 
@@ -16,4 +16,3 @@ def register_bullying_commands(router: Router):
                          (shutup_command, shutup_cmd)):
         router.message.register(command, IsGroup(),
                                 Command(commands=cmd.commands, prefix=cmd.prefix))
-    router.message.register(check_user_state, IsGroup())

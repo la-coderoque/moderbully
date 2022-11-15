@@ -24,6 +24,8 @@ class User(BaseModel):
     reg_date = Column(DATE, default=datetime.date.today())
     upd_date = Column(DATE, onupdate=datetime.date.today())
 
+    captcha = Column(String, unique=False, nullable=True)
+
     def __str__(self) -> str:
         return f'<User:{self.user_id}>'
 
