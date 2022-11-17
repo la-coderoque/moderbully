@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from bot import bot
+from bot.actions.moderation import ReadOnly
 from bot.db import User
 from bot.utils.time import (parse_timedelta_from_message, random_time_in_range,
                             td_format, DEFAULT_TD)
@@ -20,15 +21,7 @@ class RouletteParamsParseError(Exception):
 # read only
 async def read_only_command(message: Message, command: CommandObject,
                             session_maker: sessionmaker) -> None:
-    if not (await moderator_reply_to_condition(message) or
-            await sheriff_reply_to_condition(message, session_maker)):
-        return
-    duration = await parse_timedelta_from_message(message)
-    if not duration:
-        return
-    await apply_restriction(message=message,
-                            permissions=ChatPermissions(can_send_messages=False),
-                            duration=duration)
+    await ReadOnly(bot, message, session_maker, command).make()
 
 
 async def random_read_only_command(message: Message, command: CommandObject,
