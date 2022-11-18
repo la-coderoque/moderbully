@@ -42,8 +42,8 @@ class BaseAction(ABC):
             except TimedeltaParseError:
                 await self.message.reply('Failed to parse duration')
                 return
-            if duration <= timedelta(seconds=30):
-                return timedelta(seconds=30)
+            if duration <= timedelta(seconds=31):
+                return timedelta(seconds=31)
             return duration
         return timedelta(minutes=DEFAULT_TD)
 
