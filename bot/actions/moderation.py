@@ -12,10 +12,12 @@ class RouletteParamsParseError(Exception):
 
 class ReadOnly(BaseAction):
     async def _get_duration(self) -> timedelta | None:
-        return await self.parse_timedelta_from_message()
+        return await self._parse_timedelta_from_message()
 
     async def make(self) -> None:
-        if not (await self.moderator_reply_condition() or await self.sheriff_reply_condition()):
+        if not self.reply_to_user_tg_id:
+            return
+        elif not (await self.moderator_reply_condition() or await self.sheriff_reply_condition()):
             return
         duration = await self._get_duration()
         if not duration:
@@ -67,3 +69,29 @@ class RandomReadOnly(ReadOnly):
                              f'Минимальное значение: {td_format(timedelta(seconds=min_))}\n'
                              f'Максимальное значение: {td_format(timedelta(seconds=max_))}')
         return timedelta(seconds=duration)
+
+
+class BanUser(BaseAction):
+    async def make(self) -> None:
+        if not self.reply_to_user_tg_id:
+            return
+        elif not (await self.moderator_reply_condition() or await self.sheriff_reply_condition()):
+            return
+        duration = await self._parse_timedelta_from_message()
+        if not duration:
+            return
+        elif duration.seconds == self._default_td * 60:
+            await self.bot.ban_chat_member(
+                chat_id=self.message.chat.id,
+                user_id=self.reply_to_user_tg_id,
+            )
+            await self.message.answer(f'User {self.message.reply_to_message.from_user.first_name} '
+                                      '<b>banned</b> forever')
+        else:
+            await self.bot.ban_chat_member(
+                chat_id=self.message.chat.id,
+                user_id=self.reply_to_user_tg_id,
+                until_date=duration,
+            )
+            await self.message.answer(f'User {self.message.reply_to_message.from_user.first_name} '
+                                      f'<b>banned</b> for {td_format(duration) or " "}')

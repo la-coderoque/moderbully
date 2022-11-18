@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 
 from bot import bot
-from bot.actions.moderation import RandomReadOnly, ReadOnly
+from bot.actions.moderation import BanUser, RandomReadOnly, ReadOnly
 from bot.db import User
 from bot.utils.time import (parse_timedelta_from_message, td_format, DEFAULT_TD)
 from ..common import (apply_restriction, change_reply_to_user_field,
@@ -27,28 +27,9 @@ async def random_read_only_command(message: Message, command: CommandObject,
 
 
 # ban
-async def ban_command(message: Message, session_maker: sessionmaker) -> None:
-    if not (await moderator_reply_to_condition(message) or
-            await sheriff_reply_to_condition(message, session_maker)):
-        return
-    duration = await parse_timedelta_from_message(message)
-    if not duration:
-        return
-    elif duration.seconds == DEFAULT_TD * 60:
-        await bot.ban_chat_member(
-            chat_id=message.chat.id,
-            user_id=message.reply_to_message.from_user.id,
-        )
-        await message.answer(f'User {message.reply_to_message.from_user.first_name} '
-                             '<b>banned</b> forever')
-    else:
-        await bot.ban_chat_member(
-            chat_id=message.chat.id,
-            user_id=message.reply_to_message.from_user.id,
-            until_date=duration,
-        )
-        await message.answer(f'User {message.reply_to_message.from_user.first_name} '
-                             f'<b>banned</b> for {td_format(duration) or " "}')
+async def ban_command(message: Message, command: CommandObject,
+                      session_maker: sessionmaker) -> None:
+    await BanUser(bot, message, session_maker, command).make()
 
 
 async def ban_sender_chat_command(message: Message, session_maker: sessionmaker) -> None:

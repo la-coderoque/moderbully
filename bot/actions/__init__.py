@@ -11,11 +11,10 @@ from sqlalchemy.orm import sessionmaker
 from bot.db import User
 from bot.utils.time import parse_timedelta, TimedeltaParseError
 
-DEFAULT_TD = 15  # minutes
-
 
 class BaseAction(ABC):
     _moderator_statuses = ('creator', 'administrator')
+    _default_td = 15  # minutes
 
     def __init__(self, bot: Bot, message: Message,
                  session_maker: sessionmaker,
@@ -35,7 +34,7 @@ class BaseAction(ABC):
             return
         return self.message.reply_to_message.from_user.id
 
-    async def parse_timedelta_from_message(self) -> timedelta | None:
+    async def _parse_timedelta_from_message(self) -> timedelta | None:
         if args := getattr(self.command, 'args'):
             try:
                 duration = parse_timedelta(args.split()[0])
@@ -45,7 +44,7 @@ class BaseAction(ABC):
             if duration <= timedelta(seconds=31):
                 return timedelta(seconds=31)
             return duration
-        return timedelta(minutes=DEFAULT_TD)
+        return timedelta(minutes=self._default_td)
 
     async def is_user_moderator(self, user_tg_id: int) -> bool:
         user: ChatMember = await self.bot.get_chat_member(chat_id=self.message.chat.id,
